@@ -1,7 +1,8 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import sys
 import random
 
 from models import setup_db, Question, Category
@@ -11,6 +12,7 @@ QUESTIONS_PER_PAGE = 10
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
+  app.secret_key = os.urandom(32)
   setup_db(app)
   cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -33,8 +35,17 @@ def create_app(test_config=None):
   for all available categories.
   '''
   @app.route('/')
-  def hello():
-    return jsonify({'message': 'HELLO WORLD'})
+  def retrieve_all_categories():
+    try:
+      all_categories = Category.query.all()
+      return jsonify({
+        'message': 'HELLO WORLD',
+        'categories': [category.type for category in all_categories]
+      })
+    except:
+      print(sys.exc_info())
+      flash('An error occurred.')
+      abort(404)
 
   '''
   @TODO: 
@@ -48,6 +59,26 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/questions', methods=['GET'])
+  def questions():
+    page = int(request.args.get("page", "1"))
+
+    try:
+      if page < 1:
+        raise ValueError()
+      all_questions = Question.query.all()
+      range_start = min((page - 1) * QUESTIONS_PER_PAGE, len(all_questions))
+      range_end = min(page * QUESTIONS_PER_PAGE, len(all_questions))
+      range_questions = [db_question.format() for db_question in all_questions[range_start:range_end]]
+      all_categories = Category.query.all()
+      return jsonify({
+        'questions': range_questions,
+        'total_questions': len(all_questions),
+        'categories': { category.id: category.type for category in all_categories },
+      })
+    except Exception as ex:
+      flash(f"An error occurred when attempting to fetch page {page}: {ex}.")
+      abort(404)
 
   '''
   @TODO: 
@@ -56,6 +87,21 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    error_code = None
+    try:
+      question = Question.query.filter(Question.id == question_id).first()
+      question.delete()
+      flash(f"Question removed - id: {question_id}")
+    except Exception as ex:
+      error_code = 404
+      print(sys.exc_info())
+      flash(f"An error occurred: {ex}")
+
+    if error_code:
+      abort(error_code)
+    return jsonify({ "success": True })
 
   '''
   @TODO: 
