@@ -88,6 +88,26 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/questions?page=0')
         self.assertEqual(res.status_code, 404)
 
+
+    def test_retrieve_category_map_success(self):
+        """Test for retrieving map of categories"""
+        res = self.client().get('/categories')
+
+        self.assertEqual(res.status_code, 200)
+
+        data = json.loads(res.data)
+        self.assertIn("categories", data)
+
+        self.assertEqual(len(data["categories"]), 6)
+
+        expected_category_map = { '1': "Science", '2': "Art", '3': "Geography", '4': "History",
+                                  '5': "Entertainment", '6': "Sports" }
+
+        for id, category in expected_category_map.items():
+            self.assertIn(id, data["categories"])
+            self.assertEqual(category, data["categories"][id])
+
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
