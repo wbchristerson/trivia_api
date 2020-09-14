@@ -15,7 +15,7 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = "postgres://{}:{}@{}/{}".format(os.environ.get('MY_PG_USER'), os.environ.get('MY_PG_PWD'), 'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -24,10 +24,17 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
+
+            q = Question("When is the best time to wear a striped sweater?", "All the time.", 4, 5)
+            self.db.session.add(q)
+            self.db.session.commit()
+
     
     def tearDown(self):
         """Executed after reach test"""
-        pass
+        question_match = Question.query.filter(Question.question == "When is the best time to wear a striped sweater?").first()
+        if question_match:
+            question_match.delete()
 
     """
     TODO
@@ -69,7 +76,7 @@ class TriviaTestCase(unittest.TestCase):
         }
 
         self.assertEqual(10, len(data["questions"]))
-        self.assertEqual(19, data["total_questions"])
+        self.assertEqual(20, data["total_questions"])
         self.assertEqual(len(expected_category_map), len(data["categories"]))
         for id, category in expected_category_map.items():
             self.assertIn(id, data["categories"])

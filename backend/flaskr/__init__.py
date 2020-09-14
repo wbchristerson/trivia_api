@@ -47,6 +47,19 @@ def create_app(test_config=None):
       flash('An error occurred.')
       abort(404)
 
+
+  @app.route('/categories')
+  def retrieve_category_map():
+    try:
+      all_categories = Category.query.all()
+      return jsonify({
+        'categories': { category.id : category.type for category in all_categories }
+      })
+    except Exception as ex:
+      flash(f"An error occurred when attempting to fetch all categories: {ex}.")
+      abort(404)
+
+
   '''
   @TODO: 
   Create an endpoint to handle GET requests for questions, 
@@ -113,6 +126,7 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+
 
   '''
   @TODO: 

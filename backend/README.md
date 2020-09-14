@@ -45,6 +45,8 @@ To run the server, execute:
 ```bash
 export FLASK_APP=flaskr
 export FLASK_ENV=development
+export MY_PG_USER=<your postgres user>
+export MY_PG_PWD=<your postgres password>
 flask run
 ```
 
