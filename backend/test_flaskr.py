@@ -28,8 +28,9 @@ class TriviaTestCase(unittest.TestCase):
             q = Question("When is the best time to wear a striped sweater?", "All the time.", 4, 5)
             self.db.session.add(q)
             self.db.session.commit()
+            self.valid_delete_id = q.id
 
-    
+
     def tearDown(self):
         """Executed after reach test"""
         question_match = Question.query.filter(Question.question == "When is the best time to wear a striped sweater?").first()
@@ -87,6 +88,32 @@ class TriviaTestCase(unittest.TestCase):
         """Test for retrieving page of questions with failure"""
         res = self.client().get('/questions?page=0')
         self.assertEqual(res.status_code, 404)
+
+
+    def test_delete_question_success(self):
+        """Test for deleting existent question by ID"""
+        resBeforeDelete = self.client().get('/questions')
+        dataBeforeDelete = json.loads(resBeforeDelete.data)
+
+        total_question_count = dataBeforeDelete["total_questions"]
+
+        resDelete = self.client().delete(f"/questions/{self.valid_delete_id}")
+        dataDelete = json.loads(resDelete.data)
+
+        self.assertEqual(resDelete.status_code, 200)
+        self.assertTrue(dataDelete["success"])
+
+        resAfterDelete = self.client().get('/questions')
+        dataAfterDelete = json.loads(resAfterDelete.data)
+
+        self.assertEqual(dataAfterDelete["total_questions"], total_question_count-1)
+
+
+    def test_delete_question_failure(self):
+        """Test for deleting non-existent question by ID"""
+        res_delete = self.client().delete("/questions/1000000")
+
+        self.assertEqual(res_delete.status_code, 404)
 
 
     def test_retrieve_category_map_success(self):

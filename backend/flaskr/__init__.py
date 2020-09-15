@@ -78,7 +78,7 @@ def create_app(test_config=None):
 
     try:
       if page < 1:
-        raise ValueError()
+        raise ValueError(f"Page {page} does not exist.")
       all_questions = Question.query.all()
       range_start = min((page - 1) * QUESTIONS_PER_PAGE, len(all_questions))
       range_end = min(page * QUESTIONS_PER_PAGE, len(all_questions))
@@ -105,6 +105,8 @@ def create_app(test_config=None):
     error_code = None
     try:
       question = Question.query.filter(Question.id == question_id).first()
+      if question is None:
+        raise ValueError(f"There is no problem with id {question_id}.")
       question.delete()
       flash(f"Question removed - id: {question_id}")
     except Exception as ex:
@@ -126,6 +128,29 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_question():
+    error_code = None
+    question_id = None
+    try:
+      body = request.get_json()
+      fields = ["question", "answer", "category", "difficulty"]
+
+      for field in fields:
+        if body.get(field) is None:
+          raise ValueError(f"The request does not include a field for {field}.")
+
+      question = Question(body.get("question"), body.get("answer"), body.get("category"),
+                          body.get("difficulty"))
+      question.insert()
+      question_id = question.id
+    except Exception as ex:
+      pass
+
+    if error_code:
+      abort(error_code)
+
+    return jsonify({ "success": True, "id": question_id })
 
 
   '''
