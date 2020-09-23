@@ -62,7 +62,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 2. ~~Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories.~~ 
 3. ~~Create an endpoint to handle GET requests for all available categories.~~ 
 4. ~~Create an endpoint to DELETE question using a question ID.~~ 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
+5. ~~Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score.~~
 6. Create a POST endpoint to get questions based on category. 
 7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 

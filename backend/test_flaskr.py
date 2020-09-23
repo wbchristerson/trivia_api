@@ -33,9 +33,12 @@ class TriviaTestCase(unittest.TestCase):
 
     def tearDown(self):
         """Executed after reach test"""
-        question_match = Question.query.filter(Question.question == "When is the best time to wear a striped sweater?").first()
-        if question_match:
-            question_match.delete()
+        question_match_A = Question.query.filter(Question.question == "When is the best time to wear a striped sweater?").first()
+        if question_match_A:
+            question_match_A.delete()
+        question_match_B = Question.query.filter(Question.question == "What color is grass?").first()
+        if question_match_B:
+            question_match_B.delete()
 
     """
     TODO
@@ -112,7 +115,6 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question_failure(self):
         """Test for deleting non-existent question by ID"""
         res_delete = self.client().delete("/questions/1000000")
-
         self.assertEqual(res_delete.status_code, 404)
 
 
@@ -133,6 +135,38 @@ class TriviaTestCase(unittest.TestCase):
         for id, category in expected_category_map.items():
             self.assertIn(id, data["categories"])
             self.assertEqual(category, data["categories"][id])
+
+
+    def test_create_question_success(self):
+        """Test for creating question successfully"""
+        question_info = {
+            "question": 'What color is grass?',
+            "answer": 'Green',
+            "category": 5,
+            "difficulty": 2,
+        }
+        res = self.client().post('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+        self.assertTrue("success" in data)
+        self.assertTrue(data["success"])
+        self.assertTrue("id" in data)
+
+        question_match = Question.query.filter(Question.id == data["id"]).first()
+        self.assertTrue(question_match is not None)
+        self.assertEqual("What color is grass?", question_match.question)
+        self.assertEqual("Green", question_match.answer)
+        self.assertEqual(5, question_match.category)
+        self.assertEqual(2, question_match.difficulty)
+
+
+    def test_create_question_failure(self):
+        """Test for failiing to create a question due to invalid parameter dictionary"""
+        question_info = {
+            "question": 'What color is grass?'
+        }
+        res = self.client().post('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(404, res.status_code)
 
 
 # Make the tests conveniently executable

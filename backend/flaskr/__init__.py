@@ -14,11 +14,11 @@ def create_app(test_config=None):
   app = Flask(__name__)
   app.secret_key = os.urandom(32)
   setup_db(app)
-  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -144,8 +144,11 @@ def create_app(test_config=None):
                           body.get("difficulty"))
       question.insert()
       question_id = question.id
+      flash("Question successfully added.")
     except Exception as ex:
-      pass
+      error_code = 404
+      print(sys.exc_info())
+      flash(f"An error occurred: {ex}")
 
     if error_code:
       abort(error_code)
