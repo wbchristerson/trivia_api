@@ -60,30 +60,6 @@ def create_app(test_config=None):
       abort(404)
 
 
-  @app.route('/categories/<category_id>/questions')
-  def retrieve_category_questions(category_id):
-    try:
-      all_questions = Question.query.all()
-      total_questions = len(all_questions)
-
-      matching_category = Category.query.filter_by(id = category_id).first()
-
-      if matching_category is None:
-        raise ValueError("No matching category")
-
-      matching_category_type = matching_category.type
-      formatted_questions = list(map(lambda q: q.format(), all_questions))
-      matching_questions = list(filter(lambda q: q["category"] == int(category_id), formatted_questions))
-      return jsonify({
-        'questions': matching_questions,
-        'totalQuestions': total_questions,
-        'currentCategory': matching_category_type,
-      })
-    except Exception as ex:
-      flash(f"An error occurred when attempting to fetch the questions for the category with id {category_id}: {ex}")
-      abort(404)
-
-
   '''
   @TODO: 
   Create an endpoint to handle GET requests for questions, 
@@ -136,7 +112,7 @@ def create_app(test_config=None):
       flash(f"Question removed - id: {question_id}")
     except Exception as ex:
       error_code = 404
-      print(sys.exc_info())
+      # print(sys.exc_info())
       flash(f"An error occurred: {ex}")
 
     if error_code:
@@ -200,6 +176,28 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<category_id>/questions')
+  def retrieve_category_questions(category_id):
+    try:
+      all_questions = Question.query.all()
+      total_questions = len(all_questions)
+
+      matching_category = Category.query.filter_by(id = category_id).first()
+
+      if matching_category is None:
+        raise ValueError("No matching category")
+
+      matching_category_type = matching_category.type
+      formatted_questions = list(map(lambda q: q.format(), all_questions))
+      matching_questions = list(filter(lambda q: q["category"] == int(category_id), formatted_questions))
+      return jsonify({
+        'questions': matching_questions,
+        'totalQuestions': total_questions,
+        'currentCategory': matching_category_type,
+      })
+    except Exception as ex:
+      flash(f"An error occurred when attempting to fetch the questions for the category with id {category_id}: {ex}")
+      abort(404)
 
 
   '''
