@@ -3,7 +3,6 @@ from flask import Flask, request, abort, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import sys
-import random
 
 from models import setup_db, Question, Category
 
@@ -43,7 +42,7 @@ def create_app(test_config=None):
         'categories': [category.type for category in all_categories]
       })
     except:
-      print(sys.exc_info())
+      # print(sys.exc_info())
       flash('An error occurred.')
       abort(404)
 
@@ -56,7 +55,32 @@ def create_app(test_config=None):
         'categories': { category.id : category.type for category in all_categories }
       })
     except Exception as ex:
+      # print(sys.exc_info())
       flash(f"An error occurred when attempting to fetch all categories: {ex}.")
+      abort(404)
+
+
+  @app.route('/categories/<category_id>/questions')
+  def retrieve_category_questions(category_id):
+    try:
+      all_questions = Question.query.all()
+      total_questions = len(all_questions)
+
+      matching_category = Category.query.filter_by(id = category_id).first()
+
+      if matching_category is None:
+        raise ValueError("No matching category")
+
+      matching_category_type = matching_category.type
+      formatted_questions = list(map(lambda q: q.format(), all_questions))
+      matching_questions = list(filter(lambda q: q["category"] == int(category_id), formatted_questions))
+      return jsonify({
+        'questions': matching_questions,
+        'totalQuestions': total_questions,
+        'currentCategory': matching_category_type,
+      })
+    except Exception as ex:
+      flash(f"An error occurred when attempting to fetch the questions for the category with id {category_id}: {ex}")
       abort(404)
 
 
@@ -90,6 +114,7 @@ def create_app(test_config=None):
         'categories': { category.id: category.type for category in all_categories },
       })
     except Exception as ex:
+      # print(sys.exc_info())
       flash(f"An error occurred when attempting to fetch page {page}: {ex}.")
       abort(404)
 
@@ -147,7 +172,7 @@ def create_app(test_config=None):
       flash("Question successfully added.")
     except Exception as ex:
       error_code = 404
-      print(sys.exc_info())
+      # print(sys.exc_info())
       flash(f"An error occurred: {ex}")
 
     if error_code:

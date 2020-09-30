@@ -169,6 +169,37 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(404, res.status_code)
 
 
+    def test_retrieve_category_questions_success(self):
+        """Test for successful retrieval of category questions"""
+        res = self.client().get('/categories/4/questions')
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+
+        self.assertTrue("questions" in data)
+        self.assertTrue("totalQuestions" in data)
+        self.assertTrue("currentCategory" in data)
+
+        self.assertEqual(20, data["totalQuestions"])
+        self.assertEqual("History", data["currentCategory"])
+
+        questions_matches = data["questions"]
+        added_question = list(filter(lambda q: q["question"] == "When is the best time to wear a striped sweater?", questions_matches))
+
+        self.assertTrue(added_question is not None)
+        self.assertEqual(1, len(added_question))
+        self.assertEqual("When is the best time to wear a striped sweater?", added_question[0]["question"])
+        self.assertEqual("All the time.", added_question[0]["answer"])
+        self.assertEqual(4, added_question[0]["category"])
+        self.assertEqual(5, added_question[0]["difficulty"])
+
+
+    def test_retrieve_category_questions_failure(self):
+        """Test for failing to retrieve category questions"""
+        res = self.client().get('/categories/8/questions')
+        self.assertEqual(404, res.status_code)
+
+
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
