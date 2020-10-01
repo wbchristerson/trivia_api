@@ -199,6 +199,38 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(404, res.status_code)
 
 
+    def test_retrieve_question_search_success(self):
+        """Test for successful search of term 'title'"""
+        search_info = { "page": 1, "searchTerm": 'title' }
+        res = self.client().post('/questions', data=json.dumps(search_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(200, res.status_code)
+
+        data = json.loads(res.data)
+        self.assertTrue("totalQuestions" in data)
+        self.assertTrue("questions" in data)
+
+        self.assertEqual(2, data["totalQuestions"])
+        self.assertEqual(2, len(data["questions"]))
+
+        data["questions"].sort(key = lambda q: q["question"])
+
+        self.assertEqual("What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?", data["questions"][0]["question"])
+        self.assertEqual("Edward Scissorhands", data["questions"][0]["answer"])
+        self.assertEqual(5, data["questions"][0]["category"])
+        self.assertEqual(3, data["questions"][0]["difficulty"])
+
+        self.assertEqual("Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?", data["questions"][1]["question"])
+        self.assertEqual("Maya Angelou", data["questions"][1]["answer"])
+        self.assertEqual(4, data["questions"][1]["category"])
+        self.assertEqual(2, data["questions"][1]["difficulty"])
+
+
+    def test_retrieve_question_search_failure(self):
+        """Test for failed search due to invalid input data"""
+        search_info = { "page": 1 }
+        res = self.client().post('/questions', data=json.dumps(search_info), headers={'Content-Type': 'application/json'})
+        self.assertEqual(404, res.status_code)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
