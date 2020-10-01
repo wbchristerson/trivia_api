@@ -238,6 +238,30 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods = ['POST'])
+  def retrieve_quiz_question():
+    try:
+      body = request.get_json()
+      # matching_category = Category.query.filter_by(type == body["quiz_category"]).first()
+
+      # TODO: Make NOT in
+      matching_question_list = Question.query.filter(Question.category == int(body["quiz_category"]["id"])).filter(Question.id.in_(body["previous_questions"])).first()
+      print(matching_question_list)
+      return jsonify({
+        'question': matching_question_list.format(),
+      })
+    except Exception as ex:
+      flash(f"An error occurred when selecting a new question for the quiz: {ex}")
+      print(str(ex))
+      abort(404)
+
+# /quizzes, post
+
+#   previous_questions: []
+# quiz_category: {type: "Science", id: "1"}
+
+# previous_questions: []
+# quiz_category: {type: "click", id: 0}
 
   '''
   @TODO: 
