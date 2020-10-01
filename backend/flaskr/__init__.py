@@ -8,6 +8,20 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
+def get_page_range(all_records, page):
+  '''Given a page number, return the records of all_records indexed at positions QUESTIONS_PER_PAGE * (page-1) up to
+    QUESTIONS_PER_PAGE * page - 1 inclusive. If the page < 1, raise an error. If the described page range would go
+    beyond the length of the array of all_records, return up to the end of the array (returning an empty array if
+    the page range is completely beyond the length of the array).
+  '''
+  if page < 1:
+    raise ValueError(f"Page {page} does not exist.")
+  range_start = min((page - 1) * QUESTIONS_PER_PAGE, len(all_records))
+  range_end = min(page * QUESTIONS_PER_PAGE, len(all_records))
+  return [db_question.format() for db_question in all_records[range_start:range_end]]
+
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -77,12 +91,8 @@ def create_app(test_config=None):
     page = int(request.args.get("page", "1"))
 
     try:
-      if page < 1:
-        raise ValueError(f"Page {page} does not exist.")
       all_questions = Question.query.all()
-      range_start = min((page - 1) * QUESTIONS_PER_PAGE, len(all_questions))
-      range_end = min(page * QUESTIONS_PER_PAGE, len(all_questions))
-      range_questions = [db_question.format() for db_question in all_questions[range_start:range_end]]
+      range_questions = get_page_range(all_questions, page)
       all_categories = Category.query.all()
       return jsonify({
         'questions': range_questions,
@@ -129,7 +139,7 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
-  @app.route('/questions', methods=['POST'])
+  @app.route('/questions', methods=['PUT'])
   def create_question():
     error_code = None
     question_id = None
@@ -167,6 +177,23 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/questions', methods = ['POST'])
+  def retrieve_question_search():
+    try:
+      body = request.get_json()
+      page = body.get("page", 1)
+
+      if 'searchTerm' not in body:
+        raise ValueError("Improperly formatted request")
+      matching_questions = Question.query.filter(Question.question.like("%" + body["searchTerm"] + "%")).all()
+      return jsonify({
+        'totalQuestions': len(matching_questions),
+        'questions': get_page_range(matching_questions, page),
+      })
+    except Exception as ex:
+      flash(f"An error occurred when attempting to fetch questions matching the search: {ex}")
+      abort(404)
+
 
   '''
   @TODO: 
@@ -179,6 +206,7 @@ def create_app(test_config=None):
   @app.route('/categories/<category_id>/questions')
   def retrieve_category_questions(category_id):
     try:
+      page = int(request.args.get("page", "1"))
       all_questions = Question.query.all()
       total_questions = len(all_questions)
 
@@ -188,8 +216,7 @@ def create_app(test_config=None):
         raise ValueError("No matching category")
 
       matching_category_type = matching_category.type
-      formatted_questions = list(map(lambda q: q.format(), all_questions))
-      matching_questions = list(filter(lambda q: q["category"] == int(category_id), formatted_questions))
+      matching_questions = get_page_range(list(filter(lambda q: q.category == int(category_id), all_questions)), page)
       return jsonify({
         'questions': matching_questions,
         'totalQuestions': total_questions,

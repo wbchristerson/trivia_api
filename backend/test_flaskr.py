@@ -145,7 +145,7 @@ class TriviaTestCase(unittest.TestCase):
             "category": 5,
             "difficulty": 2,
         }
-        res = self.client().post('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
+        res = self.client().put('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
         self.assertEqual(200, res.status_code)
         data = json.loads(res.data)
         self.assertTrue("success" in data)
@@ -165,7 +165,7 @@ class TriviaTestCase(unittest.TestCase):
         question_info = {
             "question": 'What color is grass?'
         }
-        res = self.client().post('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
+        res = self.client().put('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
         self.assertEqual(404, res.status_code)
 
 
