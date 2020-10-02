@@ -202,7 +202,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_retrieve_question_search_success(self):
         """Test for successful search of term 'title'"""
         search_info = { "page": 1, "searchTerm": 'title' }
-        res = self.client().post('/questions', data=json.dumps(search_info), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/questions', data=json.dumps(search_info), headers={'Content-Type': 'application/json' })
         self.assertEqual(200, res.status_code)
 
         data = json.loads(res.data)
@@ -230,6 +230,14 @@ class TriviaTestCase(unittest.TestCase):
         search_info = { "page": 1 }
         res = self.client().post('/questions', data=json.dumps(search_info), headers={'Content-Type': 'application/json'})
         self.assertEqual(404, res.status_code)
+
+
+    # def test_retrieve_quiz_question_success(self):
+    #     """Test for successful retrieval of multiple quiz questions"""
+    #     previous_questions = []
+    #     quiz_category
+    #     quiz_info = { }
+    #     res = self.client().post('/quizzes', data=json.dumps(quiz_info), headers={'Content-Type': 'application/json' })
 
 
 # Make the tests conveniently executable

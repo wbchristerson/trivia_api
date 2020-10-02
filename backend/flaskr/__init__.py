@@ -3,8 +3,9 @@ from flask import Flask, request, abort, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import sys
-
 from models import setup_db, Question, Category
+from random import randint
+
 
 QUESTIONS_PER_PAGE = 10
 
@@ -242,17 +243,15 @@ def create_app(test_config=None):
   def retrieve_quiz_question():
     try:
       body = request.get_json()
-      # matching_category = Category.query.filter_by(type == body["quiz_category"]).first()
-
-      # TODO: Make NOT in
-      matching_question_list = Question.query.filter(Question.category == int(body["quiz_category"]["id"])).filter(Question.id.in_(body["previous_questions"])).first()
-      print(matching_question_list)
+      matching_question_list = Question.query.filter(Question.category == int(body["quiz_category"]["id"])).filter(Question.id.notin_(body["previous_questions"])).all()
+      chosen_index = randint(0, len(matching_question_list)-1)
       return jsonify({
-        'question': matching_question_list.format(),
+        'question': matching_question_list[chosen_index].format(),
       })
     except Exception as ex:
       flash(f"An error occurred when selecting a new question for the quiz: {ex}")
-      print(str(ex))
+      # print(sys.exc_info())
+      # print(str(ex))
       abort(404)
 
 # /quizzes, post
