@@ -90,7 +90,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_questions_page_failure(self):
         """Test for retrieving page of questions with failure"""
         res = self.client().get('/questions?page=0')
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 422)
 
 
     def test_delete_question_success(self):
@@ -166,7 +166,7 @@ class TriviaTestCase(unittest.TestCase):
             "question": 'What color is grass?'
         }
         res = self.client().put('/questions', data=json.dumps(question_info), headers={'Content-Type': 'application/json'})
-        self.assertEqual(404, res.status_code)
+        self.assertEqual(400, res.status_code)
 
 
     def test_retrieve_category_questions_success(self):

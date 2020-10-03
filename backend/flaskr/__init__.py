@@ -99,6 +99,8 @@ def create_app(test_config=None):
         'questions': range_questions,
         'total_questions': len(all_questions),
         'categories': { category.id: category.type for category in all_categories },
+
+        # How can the "current category" be determined?
       })
     except Exception as ex:
       # print(sys.exc_info())
@@ -140,6 +142,9 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+
+  # A put request seemed more appropriate to me here, also to avoid collision with the already-
+  # named post request with this URL.
   @app.route('/questions', methods=['PUT'])
   def create_question():
     error_code = None
