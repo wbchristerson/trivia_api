@@ -59,7 +59,7 @@ def create_app(test_config=None):
     except:
       # print(sys.exc_info())
       flash('An error occurred.')
-      abort(404)
+      abort(500)
 
 
   @app.route('/categories')
@@ -72,7 +72,7 @@ def create_app(test_config=None):
     except Exception as ex:
       # print(sys.exc_info())
       flash(f"An error occurred when attempting to fetch all categories: {ex}.")
-      abort(404)
+      abort(422)
 
 
   '''
@@ -103,7 +103,7 @@ def create_app(test_config=None):
     except Exception as ex:
       # print(sys.exc_info())
       flash(f"An error occurred when attempting to fetch page {page}: {ex}.")
-      abort(404)
+      abort(422)
 
   '''
   @TODO: 
@@ -158,7 +158,7 @@ def create_app(test_config=None):
       question_id = question.id
       flash("Question successfully added.")
     except Exception as ex:
-      error_code = 404
+      error_code = 400
       # print(sys.exc_info())
       flash(f"An error occurred: {ex}")
 
@@ -266,7 +266,38 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": f"The request was malformed: {error}"
+    }), 400
+
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": f"The resource was not found: {error}"
+    }), 404
+
+  @app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 422,
+      "message": f"The request was properly formatted but it could not be processed: {error}",
+    }), 422
+
+  @app.errorhandler(500)
+  def internal_server_error(error):
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": f"There was an internal server error: {error}"
+    }), 500
+
   return app
 
     
