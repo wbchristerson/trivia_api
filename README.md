@@ -1,8 +1,8 @@
 # Full Stack Trivia
 
-Hold trivia games on a regular basis and create a  webpage to manage the trivia app and play the game, but their API experience is limited and still needs to be built out. 
+This is a webpage to manage a trivia app and play the game. The front-end is minimal; the focus is on the back-end API used for accessing a postgresql database.
 
-Finish the trivia app so trivia games can be held and see who's the most knowledgeable of the bunch. The application:
+The application:
 
 1) Displays questions - both all questions and by category. Questions should show the question, category and difficulty rating by default and can show/hide the answer. 
 2) Deletes questions.
@@ -10,22 +10,14 @@ Finish the trivia app so trivia games can be held and see who's the most knowled
 4) Searches for questions based on a text query string.
 5) Plays the quiz game, randomizing either all questions or within a specific category. 
 
-## Tasks
-
-There are `TODO` comments throughout project. Start by reading the READMEs in:
+For more information about the frontend and backend (again the focus is on the backend):
 
 1. [`./frontend/`](./frontend/README.md)
 2. [`./backend/`](./backend/README.md)
 
-We recommend following the instructions in those files in order. This order will look familiar from our prior work in the course.
-
-## Starting and Submitting the Project
-
-[Fork](https://help.github.com/en/articles/fork-a-repo) the [project repository]() and [Clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom. 
-
 ## About the Stack
 
-We started the full stack application for you. It is desiged with some key functional areas:
+The key functional areas are:
 
 ### Backend
 

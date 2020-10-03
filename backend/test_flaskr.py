@@ -232,12 +232,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(404, res.status_code)
 
 
-    # def test_retrieve_quiz_question_success(self):
-    #     """Test for successful retrieval of multiple quiz questions"""
-    #     previous_questions = []
-    #     quiz_category
-    #     quiz_info = { }
-    #     res = self.client().post('/quizzes', data=json.dumps(quiz_info), headers={'Content-Type': 'application/json' })
+    def test_retrieve_quiz_question_success(self):
+        """Test for successful retrieval of multiple quiz questions"""
+        previous_questions = []
+
+        test_category_questions = Question.query.filter(Question.category == 1).all()
+        category_question_ids = [q.id for q in test_category_questions]
+
+        print(category_question_ids)
+
+        quiz_category = { "id": "1", "type": "Science" }
+        quiz_info = { "previousQuestions": previous_questions, "quiz_category": quiz_category }
+        for _ in range(len(category_question_ids)):
+            res = self.client().post('/quizzes', data=json.dumps(quiz_info), headers={'Content-Type': 'application/json' })
+            self.assertEqual(200, res.status_code)
+            data = json.loads(res.data)
+            print(data["question"]["id"])
+            self.assertEqual(data["question"]["category"], 1)
+            self.assertFalse(data["question"]["id"] in quiz_info["previousQuestions"])
+            self.assertTrue(data["question"]["id"] in category_question_ids)
+            quiz_info["previousQuestions"].append(data["question"]["id"])
+
+
+
+
+
+#             answer: "366"
+# category: 1
+# difficulty: 1
+# id: 26
+# question: "How many days are in a leap year?"
 
 
 # Make the tests conveniently executable

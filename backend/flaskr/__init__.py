@@ -244,10 +244,16 @@ def create_app(test_config=None):
     try:
       body = request.get_json()
       matching_question_list = Question.query.filter(Question.category == int(body["quiz_category"]["id"])).filter(Question.id.notin_(body["previous_questions"])).all()
-      chosen_index = randint(0, len(matching_question_list)-1)
-      return jsonify({
-        'question': matching_question_list[chosen_index].format(),
-      })
+
+      if len(matching_question_list) == 0:
+        return jsonify({
+          'question': None
+        })
+      else:
+        chosen_index = randint(0, len(matching_question_list)-1)
+        return jsonify({
+          'question': matching_question_list[chosen_index].format(),
+        })
     except Exception as ex:
       flash(f"An error occurred when selecting a new question for the quiz: {ex}")
       # print(sys.exc_info())
