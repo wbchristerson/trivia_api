@@ -260,13 +260,6 @@ def create_app(test_config=None):
       # print(str(ex))
       abort(404)
 
-# /quizzes, post
-
-#   previous_questions: []
-# quiz_category: {type: "Science", id: "1"}
-
-# previous_questions: []
-# quiz_category: {type: "click", id: 0}
 
   '''
   @TODO: 

@@ -80,7 +80,7 @@ class TriviaTestCase(unittest.TestCase):
         }
 
         self.assertEqual(10, len(data["questions"]))
-        self.assertEqual(20, data["total_questions"])
+        self.assertEqual(19, data["total_questions"])
         self.assertEqual(len(expected_category_map), len(data["categories"]))
         for id, category in expected_category_map.items():
             self.assertIn(id, data["categories"])
@@ -179,7 +179,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue("totalQuestions" in data)
         self.assertTrue("currentCategory" in data)
 
-        self.assertEqual(20, data["totalQuestions"])
+        self.assertEqual(19, data["totalQuestions"])
         self.assertEqual("History", data["currentCategory"])
 
         questions_matches = data["questions"]
@@ -239,29 +239,23 @@ class TriviaTestCase(unittest.TestCase):
         test_category_questions = Question.query.filter(Question.category == 1).all()
         category_question_ids = [q.id for q in test_category_questions]
 
-        print(category_question_ids)
-
         quiz_category = { "id": "1", "type": "Science" }
-        quiz_info = { "previousQuestions": previous_questions, "quiz_category": quiz_category }
+        quiz_info = { "previous_questions": previous_questions, "quiz_category": quiz_category }
         for _ in range(len(category_question_ids)):
             res = self.client().post('/quizzes', data=json.dumps(quiz_info), headers={'Content-Type': 'application/json' })
             self.assertEqual(200, res.status_code)
             data = json.loads(res.data)
-            print(data["question"]["id"])
             self.assertEqual(data["question"]["category"], 1)
-            self.assertFalse(data["question"]["id"] in quiz_info["previousQuestions"])
+            self.assertFalse(data["question"]["id"] in quiz_info["previous_questions"])
             self.assertTrue(data["question"]["id"] in category_question_ids)
-            quiz_info["previousQuestions"].append(data["question"]["id"])
+            quiz_info["previous_questions"].append(data["question"]["id"])
 
+        res = self.client().post('/quizzes', data=json.dumps(quiz_info), headers={'Content-Type': 'application/json' })
+        self.assertEqual(200, res.status_code)
+        data = json.loads(res.data)
+        self.assertTrue(data["question"] is None)
 
-
-
-
-#             answer: "366"
-# category: 1
-# difficulty: 1
-# id: 26
-# question: "How many days are in a leap year?"
+    # No failure test for retrieval of quiz questions seemed necessary; the above test seemed to encompass all cases
 
 
 # Make the tests conveniently executable
