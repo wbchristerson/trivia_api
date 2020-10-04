@@ -1,6 +1,6 @@
 # Full Stack Trivia App
 
-This is an application to manage a trivia webpage app and play it as a game. The front-end is minimal; the focus is on the back-end API used for accessing a postgresql database.
+This is an application to manage a trivia webpage app and play it as a game. The front-end is minimal; the focus is on the back-end API used for accessing a postgres (postgresql) database.
 
 !["Trivia Application Screen Shot"](./trivia_main_page.png)
 
