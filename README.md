@@ -25,8 +25,10 @@ The key functional areas are:
 
 The `./backend` directory contains a Flask and SQLAlchemy server. The work for this is primarily in `app.py`, where the endpoints are defined, referencing `models.py` for the DB schema and SQLAlchemy setup where necessary. 
 
+View the [README.md within ./backend](./backend/README.md) for more details.
+
 ### Frontend
 
 The `./frontend` directory contains a complete React frontend to consume the data from the Flask server. 
 
-[View the README.md within ./frontend for more details.](./frontend/README.md)
+View the [README.md within ./frontend](./frontend/README.md) for more details.
