@@ -72,7 +72,7 @@ Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` d
 Errors are returned as JSON objects in the following format:
 ```json
 {
-  "success": False,
+  "success": false,
   "error": 400,
   "message": "The request was malformed."
 }
