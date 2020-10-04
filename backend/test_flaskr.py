@@ -179,7 +179,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue("totalQuestions" in data)
         self.assertTrue("currentCategory" in data)
 
-        self.assertEqual(19, data["totalQuestions"])
+        self.assertEqual(5, data["totalQuestions"])
         self.assertEqual("History", data["currentCategory"])
 
         questions_matches = data["questions"]

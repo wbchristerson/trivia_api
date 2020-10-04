@@ -157,6 +157,12 @@ def create_app(test_config=None):
         if body.get(field) is None:
           raise ValueError(f"The request does not include a field for {field}.")
 
+      if not isinstance(body.get("difficulty"), int):
+        raise ValueError("The request does not include an integer-valued difficulty.")
+
+      if not (1 <= body.get("difficulty") <= 5):
+        raise ValueError("The request difficulty is not within the allowed range of 1 to 5 inclusive.")
+
       question = Question(body.get("question"), body.get("answer"), body.get("category"),
                           body.get("difficulty"))
       question.insert()
@@ -213,8 +219,7 @@ def create_app(test_config=None):
   def retrieve_category_questions(category_id):
     try:
       page = int(request.args.get("page", "1"))
-      all_questions = Question.query.all()
-      total_questions = len(all_questions)
+      # all_questions = Question.query.all()
 
       matching_category = Category.query.filter_by(id = category_id).first()
 
@@ -222,7 +227,12 @@ def create_app(test_config=None):
         raise ValueError("No matching category")
 
       matching_category_type = matching_category.type
-      matching_questions = get_page_range(list(filter(lambda q: q.category == int(category_id), all_questions)), page)
+
+      all_questions = Question.query.filter(Question.category == category_id).all()
+
+      total_questions = len(all_questions)
+
+      matching_questions = get_page_range(all_questions, page)
       return jsonify({
         'questions': matching_questions,
         'totalQuestions': total_questions,
