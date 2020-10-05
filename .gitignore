@@ -13,3 +13,6 @@ ehthumbs.db
 Thumbs.db
 
 .idea
+
+env
+frontend/node_modules
